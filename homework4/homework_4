@@ -1,0 +1,51 @@
+#include "array.h"
+#include <stdio.h>
+#include <assert.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Ensure the array has enough capacity
+void ensure_capacity(struct array* a) {
+    if (a->size == a->capacity) {
+        a->capacity *= 2;
+        a->start = realloc(a->start, a->capacity * sizeof(element_type));
+        assert(a->start != NULL); // Stop program if memory allocation fails
+    }
+}
+
+// Adds a new element at the end of the array
+void array_push_back(struct array* a, element_type e)
+{
+    ensure_capacity(a);             // Make sure there is room
+    a->start[a->size++] = e;        // Insert element and update size
+}
+
+// Removes the last element from the array (if not empty)
+void array_pop_back(struct array* a)
+{
+    if (a->size > 0) {
+        a->size--;                  // Just decrease the size
+    }
+}
+
+// Inserts an element at a specific index
+void array_insert(struct array* a, size_type index, element_type e)
+{
+    assert(index <= a->size);       // Index must be valid (0 to size)
+
+    // Inserting at the end is the same as push_back
+    if (index == a->size) {
+        array_push_back(a, e);
+        return;
+    }
+
+    ensure_capacity(a);             // Make sure there's space
+
+    // Shift elements to the right to make room
+    for (size_type i = a->size; i > index; --i) {
+        a->start[i] = a->start[i - 1];
+    }
+
+    a->start[index] = e;            // Insert new value
+    a->size++;                      // Increase size count
+}
